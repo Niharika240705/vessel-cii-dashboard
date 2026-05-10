@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: vessel-cii-dashboard
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXTAUTH_URL
+        scope: build,runtime
+      - key: NEXTAUTH_SECRET
+        scope: build,runtime
+      - key: DATABASE_URL
+        scope: build,runtime
+      - key: DIRECT_URL
+        scope: build,runtime
