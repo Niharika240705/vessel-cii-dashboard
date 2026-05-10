@@ -77,30 +77,30 @@ async function main() {
 
   // 2. Users
   console.log('Seeding users...');
-  const passwordHash = await bcrypt.hash('password123', 10);
+  const defaultPassword = 'demo'; // Update password hashing after deployment
   
   const admin = await prisma.user.upsert({
     where: { email: 'admin@vesselcii.com' },
-    update: { password: passwordHash, name: 'Admin User', role: Role.ADMIN },
-    create: { email: 'admin@vesselcii.com', password: passwordHash, name: 'Admin User', role: Role.ADMIN }
+    update: { password: defaultPassword, name: 'Admin User', role: Role.ADMIN },
+    create: { email: 'admin@vesselcii.com', password: defaultPassword, name: 'Admin User', role: Role.ADMIN }
   });
   
   const manager = await prisma.user.upsert({
     where: { email: 'manager@vesselcii.com' },
-    update: { password: passwordHash, name: 'Fleet Manager', role: Role.FLEET_MANAGER },
-    create: { email: 'manager@vesselcii.com', password: passwordHash, name: 'Fleet Manager', role: Role.FLEET_MANAGER }
+    update: { password: defaultPassword, name: 'Fleet Manager', role: Role.FLEET_MANAGER },
+    create: { email: 'manager@vesselcii.com', password: defaultPassword, name: 'Fleet Manager', role: Role.FLEET_MANAGER }
   });
 
   const officer1 = await prisma.user.upsert({
     where: { email: 'officer1@vesselcii.com' },
-    update: { password: passwordHash, name: 'Vessel Officer One', role: Role.VESSEL_OFFICER },
-    create: { email: 'officer1@vesselcii.com', password: passwordHash, name: 'Vessel Officer One', role: Role.VESSEL_OFFICER }
+    update: { password: defaultPassword, name: 'Vessel Officer One', role: Role.VESSEL_OFFICER },
+    create: { email: 'officer1@vesselcii.com', password: defaultPassword, name: 'Vessel Officer One', role: Role.VESSEL_OFFICER }
   });
 
   const officer2 = await prisma.user.upsert({
     where: { email: 'officer2@vesselcii.com' },
-    update: { password: passwordHash, name: 'Vessel Officer Two', role: Role.VESSEL_OFFICER },
-    create: { email: 'officer2@vesselcii.com', password: passwordHash, name: 'Vessel Officer Two', role: Role.VESSEL_OFFICER }
+    update: { password: defaultPassword, name: 'Vessel Officer Two', role: Role.VESSEL_OFFICER },
+    create: { email: 'officer2@vesselcii.com', password: defaultPassword, name: 'Vessel Officer Two', role: Role.VESSEL_OFFICER }
   });
 
   // 3. Vessels & Data
