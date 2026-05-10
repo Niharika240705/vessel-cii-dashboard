@@ -1,0 +1,203 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  FLEET_MANAGER
+  VESSEL_OFFICER
+}
+
+enum VesselType {
+  BULK_CARRIER
+  TANKER
+  CONTAINER
+  LNG_CARRIER
+  RO_RO
+  GENERAL_CARGO
+  PATROL_VESSEL
+  OFFSHORE_PATROL_VESSEL
+  LOGISTICS_SUPPORT
+  AUXILIARY
+  REPLENISHMENT_VESSEL
+  TRAINING_VESSEL
+}
+
+enum VesselCategory {
+  COMMERCIAL
+  NAVAL
+}
+
+enum FleetMode {
+  COMMERCIAL
+  DEFENCE
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      Role     @default(VESSEL_OFFICER)
+  fleetMode FleetMode @default(COMMERCIAL)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  vessels   VesselOfficer[]
+}
+
+model Vessel {
+  id              String   @id @default(uuid())
+  imoNumber       String   @unique
+  name            String
+  type            VesselType
+  vesselCategory  VesselCategory @default(COMMERCIAL)
+  grossTonnage    Float
+  deadweight      Float
+  builtYear       Int
+  flagState       String
+  classSociety    String
+  
+  // Real-time tracking properties
+  mmsi            Int?     @unique
+  latitude        Float?
+  longitude       Float?
+  speed           Float?
+  heading         Float?
+  lastPing        DateTime?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  officers        VesselOfficer[]
+  voyages         Voyage[]
+  ciiRatings      CiiRating[]
+  complianceDocs  ComplianceDocument[]
+  positionHistory VesselPositionHistory[]
+  alerts          Alert[]
+}
+
+model VesselPositionHistory {
+  id        String   @id @default(uuid())
+  vesselId  String
+  vessel    Vessel   @relation(fields: [vesselId], references: [id], onDelete: Cascade)
+  
+  latitude  Float
+  longitude Float
+  speed     Float?
+  heading   Float?
+  timestamp DateTime @default(now())
+
+  @@index([vesselId])
+  @@index([timestamp])
+}
+
+model VesselOfficer {
+  userId    String
+  vesselId  String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vessel    Vessel   @relation(fields: [vesselId], references: [id], onDelete: Cascade)
+
+  @@id([userId, vesselId])
+}
+
+model Voyage {
+  id              String   @id @default(uuid())
+  vesselId        String
+  vessel          Vessel   @relation(fields: [vesselId], references: [id], onDelete: Cascade)
+  
+  departureTime   DateTime
+  arrivalTime     DateTime
+  departurePort   String
+  arrivalPort     String
+  distanceSailed  Float    // in nautical miles
+  cargoCarried    Float?   // in metric tons, optional depending on formula
+  
+  fuelConsumptions FuelConsumption[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+enum FuelType {
+  HFO
+  VLSFO
+  MGO
+  LNG
+  METHANOL
+  AMMONIA
+}
+
+model FuelConsumption {
+  id          String   @id @default(uuid())
+  voyageId    String
+  voyage      Voyage   @relation(fields: [voyageId], references: [id], onDelete: Cascade)
+  
+  fuelType    FuelType
+  quantity    Float    // in metric tons
+  
+  createdAt   DateTime @default(now())
+}
+
+model CiiRating {
+  id              String   @id @default(uuid())
+  vesselId        String
+  vessel          Vessel   @relation(fields: [vesselId], references: [id], onDelete: Cascade)
+  
+  year            Int
+  attainedCii     Float
+  requiredCii     Float
+  rating          String   // A, B, C, D, E
+  
+  aerScore        Float    // AER proxy score
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([vesselId, year])
+}
+
+model ComplianceDocument {
+  id              String   @id @default(uuid())
+  vesselId        String
+  vessel          Vessel   @relation(fields: [vesselId], references: [id], onDelete: Cascade)
+  
+  documentType    String   // 'DCS', 'MRV', 'SEEMP'
+  status          String   // 'APPROVED', 'PENDING', 'OVERDUE'
+  fileUrl         String?
+  expiryDate      DateTime?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+enum AlertType {
+  CII_RISK
+  DOC_EXPIRY
+  FUEL_ANOMALY
+}
+
+enum AlertSeverity {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+model Alert {
+  id          String   @id @default(uuid())
+  vesselId    String
+  vessel      Vessel   @relation(fields: [vesselId], references: [id], onDelete: Cascade)
+  type        AlertType
+  severity    AlertSeverity
+  message     String
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  resolvedAt  DateTime?
+
+  @@index([vesselId])
+  @@index([createdAt])
+}

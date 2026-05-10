@@ -1,0 +1,21 @@
+# Base production image
+FROM node:18-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy dependency graphs exactly
+COPY package.json package-lock.json* ./
+
+# Install cleanly avoiding dev bloat where possible, but we need ts-node and typescript
+RUN npm install
+
+# Copy application structural code
+COPY . .
+
+# Generate Prisma client for linux env
+RUN npx prisma generate
+
+# Expose no ports internally, as this is purely a background daemon streaming outbound to websockets
+# Execute daemon strictly
+CMD ["npx", "ts-node", "src/scripts/ais-ingester.ts"]
