@@ -2,12 +2,16 @@
 
 import { useState } from "react"
 import { calculateAttainedCIIAndRating, calculateRequiredCII } from "@/lib/ciiCalculator"
-import { VesselType } from "@prisma/client"
+import type { VesselType } from "@prisma/client"
 import { Calculator, ArrowRight, Gauge, Activity } from "lucide-react"
 import { logger } from "@/lib/logger"
 
+const VESSEL_TYPES: string[] = [
+  'BULK_CARRIER', 'TANKER', 'CONTAINER', 'LNG_CARRIER', 'RO_RO', 'GENERAL_CARGO'
+];
+
 export default function CiiForm() {
-  const [vesselType, setVesselType] = useState<VesselType>(VesselType.BULK_CARRIER)
+  const [vesselType, setVesselType] = useState<VesselType>('BULK_CARRIER' as VesselType)
   const [capacity, setCapacity] = useState(50000)
   const [year, setYear] = useState(new Date().getFullYear())
   const [co2Emitted, setCo2Emitted] = useState(15000)
@@ -55,7 +59,7 @@ export default function CiiForm() {
                 onChange={(e) => setVesselType(e.target.value as VesselType)}
                 className="w-full bg-[#071326] border border-[#1e3456] text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#0D9E75]"
               >
-                {Object.keys(VesselType).map(t => <option key={t} value={t}>{t.replace('_', ' ')}</option>)}
+                {VESSEL_TYPES.map(t => <option key={t} value={t}>{t.replace('_', ' ')}</option>)}
               </select>
             </div>
             <div className="space-y-1.5">

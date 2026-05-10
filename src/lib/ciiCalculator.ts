@@ -12,6 +12,12 @@ const SHIP_TYPE_PARAMETERS: Record<VesselType, { a: number, c: number, d1: numbe
   LNG_CARRIER: { a: 9806, c: 0.471, d1: 0.89, d2: 0.98, d3: 1.06, d4: 1.14 },
   RO_RO: { a: 1967, c: 0.488, d1: 0.87, d2: 0.96, d3: 1.06, d4: 1.14 },
   GENERAL_CARGO: { a: 31948, c: 0.579, d1: 0.83, d2: 0.94, d3: 1.06, d4: 1.19 },
+  PATROL_VESSEL: { a: 31948, c: 0.579, d1: 0.83, d2: 0.94, d3: 1.06, d4: 1.19 },
+  OFFSHORE_PATROL_VESSEL: { a: 31948, c: 0.579, d1: 0.83, d2: 0.94, d3: 1.06, d4: 1.19 },
+  LOGISTICS_SUPPORT: { a: 5247, c: 0.461, d1: 0.82, d2: 0.93, d3: 1.08, d4: 1.28 },
+  AUXILIARY: { a: 31948, c: 0.579, d1: 0.83, d2: 0.94, d3: 1.06, d4: 1.19 },
+  REPLENISHMENT_VESSEL: { a: 5247, c: 0.461, d1: 0.82, d2: 0.93, d3: 1.08, d4: 1.28 },
+  TRAINING_VESSEL: { a: 31948, c: 0.579, d1: 0.83, d2: 0.94, d3: 1.06, d4: 1.19 }
 }
 
 // Reduction factors Z relative to 2019 reference year

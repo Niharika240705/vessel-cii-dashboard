@@ -65,7 +65,7 @@ export default function FleetCarbonCharts({ vessels, fuelSplit }: FleetCarbonCha
                 cursor={{ fill: '#1e3456', opacity: 0.4 }}
                 contentStyle={{ backgroundColor: '#071326', borderColor: '#1e3456', borderRadius: '8px', color: '#fff' }}
                 itemStyle={{ fontSize: '13px' }}
-                formatter={(value: number, name: string) => [value.toLocaleString(undefined, { maximumFractionDigits: 0 }), 'CO₂ (MT)']}
+                formatter={(value: any, name: any) => [value ? Number(value).toLocaleString(undefined, { maximumFractionDigits: 0 }) : '0', 'CO₂ (MT)']}
                 labelFormatter={(label) => `Vessel: ${label}`}
               />
               <Bar dataKey="co2Emissions" radius={[4, 4, 0, 0]}>
@@ -108,7 +108,7 @@ export default function FleetCarbonCharts({ vessels, fuelSplit }: FleetCarbonCha
               <Tooltip 
                 contentStyle={{ backgroundColor: '#071326', borderColor: '#1e3456', borderRadius: '8px', color: '#fff' }}
                 itemStyle={{ fontSize: '13px' }}
-                formatter={(value: number) => [value.toLocaleString(undefined, { maximumFractionDigits: 0 }), 'CO₂ (MT)']}
+                formatter={(value: any) => [value ? Number(value).toLocaleString(undefined, { maximumFractionDigits: 0 }) : '0', 'CO₂ (MT)']}
               />
               <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: '12px', color: '#94a3b8', marginTop: '20px' }}/>
             </PieChart>

@@ -3,8 +3,9 @@ import { prisma } from '@/lib/prisma';
 import { renderToStream } from '@react-pdf/renderer';
 import { PdfReportTemplate } from '@/components/vessels/PdfReportTemplate';
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, props: { params: Promise<{ id: string }> }) {
   try {
+    const params = await props.params;
     const { searchParams } = new URL(req.url);
     const yearStr = searchParams.get('year') || new Date().getFullYear().toString();
     const year = parseInt(yearStr);

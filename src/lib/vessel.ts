@@ -55,7 +55,7 @@ export async function fetchVesselMetadata(mmsi: number): Promise<VesselMetadata 
     if (!vessel) return null
 
     // Simple heuristic to map generic API vessel types to Prisma enums
-    let vesselType = VesselType.GENERAL_CARGO
+    let vesselType: VesselType = VesselType.GENERAL_CARGO
     const apiTypeDesc = (vessel.TYPE_SUMMARY || vessel.type || "").toUpperCase()
     
     if (apiTypeDesc.includes("BULK")) vesselType = VesselType.BULK_CARRIER
