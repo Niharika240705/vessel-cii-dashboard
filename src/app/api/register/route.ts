@@ -28,13 +28,13 @@ export async function POST(req: Request) {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user (defaulting to VESSEL_OFFICER role and COMMERCIAL fleetMode)
+    // Create user (defaulting to FLEET_MANAGER role to view all vessels by default)
     const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
-        role: "VESSEL_OFFICER",
+        role: "FLEET_MANAGER",
         fleetMode: "COMMERCIAL",
       },
     });
