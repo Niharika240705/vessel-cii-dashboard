@@ -1,5 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
+import { prisma } from './src/lib/prisma';
 async function main() {
   const ratings = await prisma.ciiRating.findMany({ select: { rating: true, attainedCii: true }});
   console.log(ratings);

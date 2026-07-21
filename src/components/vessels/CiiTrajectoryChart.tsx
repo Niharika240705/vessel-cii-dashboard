@@ -59,6 +59,28 @@ const CustomDot = (props: any) => {
   );
 };
 
+const CustomTooltip = ({ active, payload, label, mode }: any) => {
+  if (active && payload && payload.length) {
+    const point = payload[0].payload;
+    return (
+      <div className="bg-[#0B1F3A] border border-[#1e3456] p-4 rounded-xl shadow-2xl">
+        <p className="text-white font-bold mb-2">{label} {point.isHistorical ? '(Historical)' : '(Projected)'}</p>
+        <div className="space-y-1 text-sm">
+          <p className="text-slate-300">{mode === 'COMMERCIAL' ? 'Attained CII:' : 'Energy Idx:'} <span className="text-white font-medium">{point.attainedCii}</span></p>
+          <p className="text-slate-300">{mode === 'COMMERCIAL' ? 'Required CII:' : 'Target Idx:'} <span className="text-white font-medium">{point.requiredCii}</span></p>
+          <div className="flex items-center gap-2 mt-2 pt-2 border-t border-[#1e3456]">
+            <span className="text-slate-400">{mode === 'COMMERCIAL' ? 'Grade:' : 'Readiness:'}</span>
+            <span className="px-2 py-0.5 rounded font-bold text-white text-xs" style={{ backgroundColor: getGradeColor(point.grade) }}>
+              {mode === 'COMMERCIAL' ? point.grade : getNavalGrade(point.grade)}
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function CiiTrajectoryChart({ vesselId }: { vesselId: string }) {
   const [data, setData] = useState<any[]>([]);
   const [summary, setSummary] = useState('');
@@ -109,28 +131,6 @@ export default function CiiTrajectoryChart({ vesselId }: { vesselId: string }) {
 
   const currentYear = new Date().getFullYear();
 
-  // Custom Tooltip
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      const point = payload[0].payload;
-      return (
-        <div className="bg-[#0B1F3A] border border-[#1e3456] p-4 rounded-xl shadow-2xl">
-          <p className="text-white font-bold mb-2">{label} {point.isHistorical ? '(Historical)' : '(Projected)'}</p>
-          <div className="space-y-1 text-sm">
-            <p className="text-slate-300">{mode === 'COMMERCIAL' ? 'Attained CII:' : 'Energy Idx:'} <span className="text-white font-medium">{point.attainedCii}</span></p>
-            <p className="text-slate-300">{mode === 'COMMERCIAL' ? 'Required CII:' : 'Target Idx:'} <span className="text-white font-medium">{point.requiredCii}</span></p>
-            <div className="flex items-center gap-2 mt-2 pt-2 border-t border-[#1e3456]">
-              <span className="text-slate-400">{mode === 'COMMERCIAL' ? 'Grade:' : 'Readiness:'}</span>
-              <span className="px-2 py-0.5 rounded font-bold text-white text-xs" style={{ backgroundColor: getGradeColor(point.grade) }}>
-                {mode === 'COMMERCIAL' ? point.grade : getNavalGrade(point.grade)}
-              </span>
-            </div>
-          </div>
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <div className="rounded-2xl bg-[#0B1F3A] border border-[#1e3456] shadow-sm p-6">
@@ -151,7 +151,7 @@ export default function CiiTrajectoryChart({ vesselId }: { vesselId: string }) {
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e3456" vertical={false} />
                 <XAxis dataKey="year" stroke="#64748b" tick={{ fill: '#64748b' }} tickMargin={10} />
                 <YAxis stroke="#64748b" tick={{ fill: '#64748b' }} domain={['auto', 'auto']} width={40} />
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={({ active, payload, label }) => <CustomTooltip active={active} payload={payload} label={label} mode={mode} />} />
                 <Legend wrapperStyle={{ paddingTop: '20px' }} />
 
                 {/* Background Grade Bands (Stacked Areas) */}

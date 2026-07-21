@@ -1,9 +1,13 @@
 import { PrismaClient, VesselType, Role, FuelType, VesselCategory } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-const prisma = new PrismaClient();
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
 const CF_FACTORS: Record<FuelType, number> = {
   [FuelType.HFO]: 3.114,
@@ -163,7 +167,7 @@ async function main() {
         const isBallast = Math.random() > 0.7; // 30% chance of ballast voyage
         const cargoCarried = isBallast ? 0 : dbVessel.deadweight * (Math.random() * 0.45 + 0.5);
 
-        let depPort = PORTS[Math.floor(Math.random() * PORTS.length)];
+        const depPort = PORTS[Math.floor(Math.random() * PORTS.length)];
         let arrPort = PORTS[Math.floor(Math.random() * PORTS.length)];
         while (depPort === arrPort) {
             arrPort = PORTS[Math.floor(Math.random() * PORTS.length)];

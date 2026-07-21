@@ -10,7 +10,7 @@ export async function GET(req: Request) {
     const vesselId = searchParams.get('vesselId');
     const status = searchParams.get('status');
 
-    let whereClause: any = {};
+    const whereClause: any = {};
 
     if (type && type !== 'ALL') whereClause.type = type as AlertType;
     if (severity && severity !== 'ALL') whereClause.severity = severity as AlertSeverity;

@@ -24,13 +24,6 @@ export default function TopNav({ userName, userRole }: { userName?: string, user
   // Format the role for display (e.g. FLEET_MANAGER -> Fleet Manager)
   const roleDisplay = userRole?.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ')
 
-  useEffect(() => {
-    fetchUnreadAlerts()
-    // Could set up a polling interval here for a real app
-    const interval = setInterval(fetchUnreadAlerts, 60000)
-    return () => clearInterval(interval)
-  }, [])
-
   const fetchUnreadAlerts = async () => {
     try {
       const res = await fetch('/api/alerts/unread')
@@ -43,6 +36,13 @@ export default function TopNav({ userName, userRole }: { userName?: string, user
       console.error(e)
     }
   }
+
+  useEffect(() => {
+    fetchUnreadAlerts()
+    // Could set up a polling interval here for a real app
+    const interval = setInterval(fetchUnreadAlerts, 60000)
+    return () => clearInterval(interval)
+  }, [])
 
   const markAllAsRead = async () => {
     try {

@@ -32,6 +32,7 @@ export default function CiiForecastModule({
       url += `&fuelTypeOverride=${fuelTypeOverride}`;
     }
     
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
     fetch(url)
       .then(res => res.json())

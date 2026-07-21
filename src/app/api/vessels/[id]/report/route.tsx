@@ -96,7 +96,7 @@ export async function GET(req: Request, props: { params: Promise<{ id: string }>
 
     // We need to convert the stream to a buffer to send in Next.js response
     return new Promise<NextResponse>((resolve, reject) => {
-      let buffers: any[] = [];
+      const buffers: any[] = [];
       stream.on('data', (chunk) => buffers.push(chunk));
       stream.on('end', () => {
         const pdfBuffer = Buffer.concat(buffers);
