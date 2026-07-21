@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   },
 };
 
-const GITHUB_URL = "https://github.com/yourusername/vessel-cii-dashboard";
+const GITHUB_URL = "https://github.com/Niharika240705/vessel-cii-dashboard";
 
 function DashboardMockup() {
   return (
