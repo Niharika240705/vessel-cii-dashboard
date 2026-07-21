@@ -144,6 +144,19 @@ export default function LoginPage() {
             {loading ? <Loader2 size={20} className="animate-spin" /> : (isSignUp ? "Sign Up" : "Sign In")}
             {!loading && <ArrowRight size={18} />}
           </button>
+
+          {!isSignUp && (
+            <button
+              type="button"
+              onClick={() => {
+                setEmail("admin@vesselcii.com");
+                setPassword("demo");
+              }}
+              className="w-full py-3 px-4 bg-[#071326] border border-[#1e3456] text-teal-400 hover:text-teal-300 hover:border-teal-500/50 rounded-xl text-sm font-semibold transition-all mt-2"
+            >
+              🚀 Quick Demo Login (Admin)
+            </button>
+          )}
         </form>
 
         <div className="mt-6 text-center text-sm border-t border-[#1e3456] pt-4">
