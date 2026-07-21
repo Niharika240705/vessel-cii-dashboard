@@ -3,34 +3,66 @@
 import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { Ship, Lock, Mail, Loader2, ArrowRight } from "lucide-react"
+import { Ship, Lock, Mail, Loader2, ArrowRight, User as UserIcon } from "lucide-react"
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("admin@vesselciidashboard.com")
+  const [isSignUp, setIsSignUp] = useState(false)
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("admin@vesselcii.com")
   const [password, setPassword] = useState("demo")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const router = useRouter()
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError("")
 
     try {
-      const res = await signIn("credentials", {
-        redirect: false,
-        email,
-        password,
-      })
+      if (isSignUp) {
+        // Sign Up Flow
+        const registerRes = await fetch("/api/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, password }),
+        });
+        
+        const registerData = await registerRes.json();
 
-      if (res?.error) {
-        setError("Invalid email or password")
+        if (!registerRes.ok) {
+          throw new Error(registerData.error || "Failed to register");
+        }
+
+        // Auto-login after successful registration
+        const res = await signIn("credentials", {
+          redirect: false,
+          email,
+          password,
+        });
+
+        if (res?.error) {
+          setError("Account created, but automatic sign-in failed. Please log in manually.");
+          setIsSignUp(false);
+        } else {
+          router.push("/dashboard");
+        }
       } else {
-        router.push("/dashboard")
+        // Login Flow
+        const res = await signIn("credentials", {
+          redirect: false,
+          email,
+          password,
+        })
+
+        if (res?.error) {
+          setError("Invalid email or password")
+        } else {
+          router.push("/dashboard")
+        }
       }
-    } catch (err) {
-      setError("An unexpected error occurred")
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred")
     } finally {
       setLoading(false)
     }
@@ -52,10 +84,27 @@ export default function LoginPage() {
           <p className="text-slate-400 mt-2 text-sm text-center">Compliance & Decarbonization Intelligence Platform</p>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {error && (
             <div className="p-3 bg-red-500/10 border border-red-500/50 text-red-500 text-sm rounded-lg text-center">
               {error}
+            </div>
+          )}
+
+          {isSignUp && (
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-slate-300 ml-1">Full Name</label>
+              <div className="relative">
+                <UserIcon size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                <input 
+                  type="text" 
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full bg-[#071326] border border-[#1e3456] text-white rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-[#0D9E75] focus:ring-1 focus:ring-[#0D9E75] transition-all"
+                  placeholder="John Doe"
+                  required
+                />
+              </div>
             </div>
           )}
 
@@ -92,19 +141,42 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#0D9E75] to-teal-600 hover:from-teal-500 hover:to-teal-400 text-white font-semibold py-3 px-4 rounded-xl shadow-lg shadow-teal-900/30 hover:shadow-teal-900/50 transition-all disabled:opacity-70 mt-2"
           >
-            {loading ? <Loader2 size={20} className="animate-spin" /> : "Sign In"}
+            {loading ? <Loader2 size={20} className="animate-spin" /> : (isSignUp ? "Sign Up" : "Sign In")}
             {!loading && <ArrowRight size={18} />}
           </button>
         </form>
 
-        <div className="mt-8 pt-6 border-t border-[#1e3456] text-center">
+        <div className="mt-6 text-center text-sm border-t border-[#1e3456] pt-4">
+          <button
+            type="button"
+            onClick={() => {
+              setIsSignUp(!isSignUp);
+              setError("");
+              if (!isSignUp) {
+                // Clear demo values when switching to signup
+                setName("");
+                setEmail("");
+                setPassword("");
+              } else {
+                // Set default demo values when switching back to login
+                setEmail("admin@vesselcii.com");
+                setPassword("demo");
+              }
+            }}
+            className="text-[#0D9E75] hover:underline hover:text-teal-400 transition-colors font-medium"
+          >
+            {isSignUp ? "Already have an account? Sign In" : "Don't have an account? Sign Up"}
+          </button>
+        </div>
+
+        <div className="mt-6 pt-4 border-t border-[#1e3456] text-center">
           <p className="text-xs text-slate-500 mb-2">Demo Credentials:</p>
           <div className="flex justify-center gap-4 text-xs font-mono text-slate-400">
-            <span>admin@...</span>
-            <span>manager@...</span>
-            <span>officer@...</span>
+            <span>admin@vesselcii.com</span>
+            <span>manager@vesselcii.com</span>
+            <span>officer1@vesselcii.com</span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">Pwd: demo or hashed_password_123</p>
+          <p className="text-xs text-slate-500 mt-1">Pwd: demo</p>
         </div>
       </div>
     </div>

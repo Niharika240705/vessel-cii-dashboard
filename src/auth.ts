@@ -1,6 +1,7 @@
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { prisma } from "./lib/prisma"
+import bcrypt from "bcryptjs"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   session: { strategy: "jwt" },
@@ -24,9 +25,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         if (!user) return null
 
-        // For production: use bcrypt.compare(credentials.password, user.password)
-        // For demo: allow simple password check (update your seed with hashed passwords)
-        if (credentials.password === "demo" || credentials.password === user.password) {
+        // Support plain text / demo passwords OR bcrypt hashed passwords
+        const isValid = credentials.password === "demo" || 
+                        credentials.password === user.password ||
+                        (await bcrypt.compare(credentials.password as string, user.password));
+
+        if (isValid) {
           return { id: user.id, name: user.name, email: user.email, role: user.role }
         }
 
